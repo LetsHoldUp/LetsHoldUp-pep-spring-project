@@ -21,5 +21,5 @@ public interface MessageRepository extends JpaRepository<Message, Integer>{
     Optional<ArrayList<Message>> getNewestMessage();
 
     @Query("FROM Message WHERE posted_by = :PB")
-    Optional<ArrayList<Message>> findMessageByPosted_by(@Param("PB") String posted_by);
+    Optional<ArrayList<Message>> findMessageByPosted_by(@Param("PB") Integer posted_by);
 }

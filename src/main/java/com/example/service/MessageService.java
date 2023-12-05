@@ -79,7 +79,8 @@ public class MessageService {
     }
 
     public ArrayList<Message> getAllMessagesByPosted_By(Integer posted_by) {
-        Optional<ArrayList<Message>> messages = messageRepository.findMessageByPosted_by(posted_by.toString());
+        Optional<ArrayList<Message>> messages = messageRepository.findMessageByPosted_by(posted_by);
+
         if(messages.isPresent()){
             return messages.get();
         }

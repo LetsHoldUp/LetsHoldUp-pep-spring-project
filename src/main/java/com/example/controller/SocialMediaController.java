@@ -140,7 +140,9 @@ public class SocialMediaController {
 
         // Get the message and then send it in the ResponseEntity body
         Message outMessage = messageService.getMessageById(id);
-        return ResponseEntity.status(200).body(outMessage);
+
+        // Rebuild the message since we were dealing with some sort of hibernate proxy message class
+        return ResponseEntity.status(HttpStatus.OK).body(new Message(outMessage.getMessage_id(), outMessage.getPosted_by(), outMessage.getMessage_text(), outMessage.getTime_posted_epoch()));
     }
 
     // 6. Delete a message by its {message_id}
@@ -168,19 +170,20 @@ public class SocialMediaController {
         // Convert the string boy to a proper id 
         Integer id = Integer.parseInt(message_id);
 
-        // Convert the JSON body into a lone string value
-        body = objectMapper.readValue(body, Message.class).getMessage_text();
-
         // Check to make sure the message exists
         if(messageService.checkIfMessageExists(id) == false){
             // Since message doesn't exist, return OK with no body
             return ResponseEntity.status(400).build();
         }
 
+        // Convert the JSON body into a lone string value
+        body = objectMapper.readValue(body, Message.class).getMessage_text();
+
         // Now we will call messageService.updateMessageById 
         // This will check to make sure the message is the correct length, and then update it
         // Or it will return null if the text is not correct
         Message outMessage = messageService.updateMessageById(body, id);
+
         if(outMessage == null){
             return ResponseEntity.status(400).build(); 
         }
@@ -190,9 +193,9 @@ public class SocialMediaController {
 
     // 8. Retreive all message by their {posted_by}
     @GetMapping(path="/accounts/{account_id}/messages")
-    public @ResponseBody ResponseEntity<List<Message>> getAllMessagesByPosted_By(@PathVariable String posted_by) throws JsonMappingException, JsonProcessingException {
+    public @ResponseBody ResponseEntity<List<Message>> getAllMessagesByPosted_By(@PathVariable String account_id) throws JsonMappingException, JsonProcessingException {
         // Convert the posted_by string into an integer
-        Integer posted = Integer.parseInt(posted_by);
+        Integer posted = Integer.parseInt(account_id);
 
         ArrayList<Message> outMessages = messageService.getAllMessagesByPosted_By(posted);
         
