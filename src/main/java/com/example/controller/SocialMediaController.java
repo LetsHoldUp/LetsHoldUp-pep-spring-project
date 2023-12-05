@@ -138,8 +138,9 @@ public class SocialMediaController {
             return ResponseEntity.status(HttpStatus.OK).build();
         }
 
+        // Get the message and then send it in the ResponseEntity body
         Message outMessage = messageService.getMessageById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(outMessage);
+        return ResponseEntity.status(200).body(outMessage);
     }
 
     // 6. Delete a message by its {message_id}
@@ -163,11 +164,12 @@ public class SocialMediaController {
 
     // 7. Update a message by its {message_id}
     @PatchMapping(path="/messages/{message_id}")
-    public @ResponseBody ResponseEntity<Message> updateMessageById(@RequestBody String body, @PathVariable String message_id) throws JsonMappingException, JsonProcessingException{
+    public @ResponseBody ResponseEntity<Integer> updateMessageById(@RequestBody String body, @PathVariable String message_id) throws JsonMappingException, JsonProcessingException{
         // Convert the string boy to a proper id 
         Integer id = Integer.parseInt(message_id);
-        // Convert the body into a message object
-        Message message = objectMapper.readValue(body, Message.class);
+
+        // Convert the JSON body into a lone string value
+        body = objectMapper.readValue(body, Message.class).getMessage_text();
 
         // Check to make sure the message exists
         if(messageService.checkIfMessageExists(id) == false){
@@ -178,18 +180,24 @@ public class SocialMediaController {
         // Now we will call messageService.updateMessageById 
         // This will check to make sure the message is the correct length, and then update it
         // Or it will return null if the text is not correct
-        Message outMessage = messageService.updateMessageById(message, id);
-        System.out.println(outMessage);
-        System.out.println(outMessage.toString());
-        
+        Message outMessage = messageService.updateMessageById(body, id);
         if(outMessage == null){
             return ResponseEntity.status(400).build(); 
         }
 
-        return ResponseEntity.status(200).body(outMessage);
+        return ResponseEntity.status(200).body(1);
     }
 
     // 8. Retreive all message by their {posted_by}
+    @GetMapping(path="/accounts/{account_id}/messages")
+    public @ResponseBody ResponseEntity<List<Message>> getAllMessagesByPosted_By(@PathVariable String posted_by) throws JsonMappingException, JsonProcessingException {
+        // Convert the posted_by string into an integer
+        Integer posted = Integer.parseInt(posted_by);
+
+        ArrayList<Message> outMessages = messageService.getAllMessagesByPosted_By(posted);
+        
+        return ResponseEntity.status(200).body(outMessages);
+    }
 
     // 9. Spring test
 

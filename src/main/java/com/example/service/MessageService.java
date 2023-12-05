@@ -65,16 +65,25 @@ public class MessageService {
         messageRepository.deleteById(id);
     }
 
-    public Message updateMessageById(Message message, Integer id) {
+    public Message updateMessageById(String body, Integer id) {
         // Check to make sure the message is the correct length
-        if(message.getMessage_text().length() <= 0 || message.getMessage_text().length() > 254) {
+        if(body.length() <= 0 || body.length() > 254) {
             return null;
         }
         
         // Pull out the message, replace the message text, save the message object and then return it
         Message secureMessage = messageRepository.getById(id);
-        secureMessage.setMessage_text(message.getMessage_text());
+        secureMessage.setMessage_text(body);
         messageRepository.save(secureMessage);
-        return secureMessage;
+        return messageRepository.getById(id);
+    }
+
+    public ArrayList<Message> getAllMessagesByPosted_By(Integer posted_by) {
+        Optional<ArrayList<Message>> messages = messageRepository.findMessageByPosted_by(posted_by.toString());
+        if(messages.isPresent()){
+            return messages.get();
+        }
+        // If we don't exist return an empty ArrayList
+        return new ArrayList<Message>();
     }
 }
