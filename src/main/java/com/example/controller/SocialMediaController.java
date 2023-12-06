@@ -100,12 +100,12 @@ public class SocialMediaController {
 
     // 3. Allow new messages to be posted
     @PostMapping(path= "/messages")
-    public @ResponseBody ResponseEntity<Message> postNewMessage(@RequestBody String body) throws JsonMappingException, JsonProcessingException{
+    public @ResponseBody ResponseEntity<Message> postNewMessage(@RequestBody Message body) throws JsonMappingException, JsonProcessingException{
         // Convert jsonbody into a Message object
-        Message message = objectMapper.readValue(body, Message.class);
+        // Message message = objectMapper.readValue(body, Message.class);
 
         // Call messageService.postNewMessage method
-        Message outMessage = messageService.postNewMessage(message);
+        Message outMessage = messageService.postNewMessage(body);
         
         // Check to ensure the message has been persisted, outMessage will be null otherwise
         if (outMessage == null){
